@@ -1,78 +1,78 @@
-AWSTemplateFormatVersion: '2010-09-09'
-
+AWSTemplateFormatVersion: 2010-09-09
 Parameters:
-
   ACL:
     Type: String
-    Description: Would you like to apply a canned access control list to grant predefined permissions?
-    # S3 Canned ACLs: https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+    Description: Would you like to apply a canned access control list to grant
+      predefined permissions?
     AllowedValues:
-      - "private"
-      - "public-read"
-      - "public-read-write"
-      - "authenticated-read"
-      - "bucket-owner-read"
-      - "bucket-owner-full-control"
-      - "aws-exec-read"
-    Default: "private"
-
-  BucketName: 
+      - private
+      - public-read
+      - public-read-write
+      - authenticated-read
+      - bucket-owner-read
+      - bucket-owner-full-control
+      - aws-exec-read
+    Default: private
+  BucketName:
     Type: String
     Description: Name of the S3 bucket.
-    # Bucket Restrictions: https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
-    AllowedPattern: "^([a-z0-9]{1}[a-z0-9-]{1,61}[a-z0-9]{1})$"
-    ConstraintDescription: "Bucket names must start and end with a letter or number, and be between 3 and 63 characters in length."
-
+    AllowedPattern: ^([a-z0-9]{1}[a-z0-9-]{1,61}[a-z0-9]{1})$
+    ConstraintDescription: Bucket names must start and end with a letter or number,
+      and be between 3 and 63 characters in length.
   Versioning:
     Type: String
     Description: Enable or suspend object versioning.
     AllowedValues:
-      - "Enabled"
-      - "Suspended"
-    Default: "Enabled"
-
+      - Enabled
+      - Suspended
+    Default: Enabled
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: "S3 Bucket Configuration Parameters"
+          default: S3 Bucket Configuration Parameters
         Parameters:
           - BucketName
           - ACL
           - Versioning
-
     ParameterLabels:
       BucketName:
-        default: "S3 Bucket Name"
+        default: S3 Bucket Name
       ACL:
-        default: "Bucket Access Control List"
+        default: Bucket Access Control List
       Versioning:
-        default: "Object Versioning"
-
+        default: Object Versioning
 Conditions:
   hasACL:
-    !Not: 
-      - !Equals 
-        - !Ref ACL
-        - "None"
-
+    - - ACL
+      - None
 Resources:
   Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      AccessControl: !If [hasACL, !Ref ACL, !Ref "AWS::NoValue"]
-      BucketName: !Ref BucketName
+      AccessControl:
+        - hasACL
+        - ACL
+        - AWS::NoValue
+      BucketName: BucketName
       VersioningConfiguration:
-        Status: !Ref Versioning
-
+        Status: Versioning
 Outputs:
-
   BucketURL:
-    Value: !Join ['', ['https://', !Ref BucketName, '.s3.amazonaws.com']]
+    Value:
+      - ""
+      - - https://
+        - BucketName
+        - .s3.amazonaws.com
     Export:
-      Name: !Join ['', [!Ref "AWS::StackName", "BucketURL"]]
-
+      Name:
+        - ""
+        - - AWS::StackName
+          - BucketURL
   BucketARN:
-    Value: !GetAtt Bucket.Arn
+    Value: Bucket.Arn
     Export:
-      Name: !Join ['', [!Ref "AWS::StackName", "BucketARN"]]
+      Name:
+        - ""
+        - - AWS::StackName
+          - BucketARN
