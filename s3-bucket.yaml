@@ -59,20 +59,11 @@ Resources:
         Status: Versioning
 Outputs:
   BucketURL:
-    Value:
-      - ""
-      - - https://
-        - BucketName
-        - .s3.amazonaws.com
+    Value: !Join ['', ['https://', !Ref BucketName, '.s3.amazonaws.com']]
     Export:
-      Name:
-        - ""
-        - - AWS::StackName
-          - BucketURL
+      Name: !Sub '${AWS::StackName}-BucketURL'
+
   BucketARN:
-    Value: Bucket.Arn
+    Value: !GetAtt Bucket.Arn
     Export:
-      Name:
-        - ""
-        - - AWS::StackName
-          - BucketARN
+      Name: !Sub '${AWS::StackName}-BucketARN'
